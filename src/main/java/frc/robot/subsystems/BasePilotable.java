@@ -53,6 +53,20 @@ public class BasePilotable extends SubsystemBase {
 
   /** Creates a new BasePilotable. */
   public BasePilotable() {
+    m_colorMatcher.addColorMatch(kYellowTarget);
+    m_colorMatcher.addColorMatch(kPurpleTarget);
+
+    resetEncodeur();
+    resetGyro();
+    conversionEncodeur=Math.PI*0.1865/(256*3*2.5); //roue de 18.46 cm déterminé manuellement, ratio 2.5:1 shaft-roue 3:1 encodeur-shaft encodeur 256 clic encodeur 
+    
+    setRamp(0);
+    encodeurg.setDistancePerPulse(conversionEncodeur);
+    encodeurd.setDistancePerPulse(conversionEncodeur);
+    setNeutralMode(IdleMode.kCoast);
+    //odometrie= new DifferentialDriveOdometry(Rotation2d.fromDegrees(getYaw()));
+    neog.setInverted(true);
+    neod.setInverted(true);
 
   }
   
@@ -86,4 +100,72 @@ public class BasePilotable extends SubsystemBase {
     SmartDashboard.putString("Detected Color", colorString);
 
   }
+
+  public double getPositionD() {
+    return encodeurd.getDistance();
+  }
+
+  public double getPositionG() {
+    return encodeurg.getDistance();
+
+
+  }
+
+  public void resetEncodeur() {
+    encodeurd.reset();
+    encodeurg.reset();
+    neog1.getEncoder().setPosition(0);
+  }
+
+  public double getYaw() {
+    return gyro.getYaw();
+    
+  }
+  public double getRoll() {
+    return gyro.getRoll();
+
+
+  }
+
+  public void resetGyro() {
+    gyro.setYaw(0);
+  }
+
+public void tankDriveVolts(double leftVolts, double rightVolts) {
+  neog.setVoltage(leftVolts);
+  neod.setVoltage(-rightVolts);
+  drive.feed();
+}
+
+public double getVitesseD() {
+  return encodeurd.getRate();
+}
+
+public double getVitesseG() {
+  return encodeurg.getRate();
+}
+public double getVitesse() {
+  return (getVitesseD() + getVitesseG()) / 2;
+}
+
+public void setNeutralMode(IdleMode mode){
+  neog1.setIdleMode(mode);
+  neog2.setIdleMode(mode);
+  neod1.setIdleMode(mode);
+  neod2.setIdleMode(mode);
+}
+
+public void setRamp(double ramp) {
+  neog1.setOpenLoopRampRate(ramp);
+  neog2.setOpenLoopRampRate(ramp);
+  neod1.setOpenLoopRampRate(ramp);
+  neod2.setOpenLoopRampRate(ramp);
+}
+
+public void conduire(double vx, double vz) {
+  drive.arcadeDrive(-vx, 0.7*vz);
+
+}
+
+
 }
