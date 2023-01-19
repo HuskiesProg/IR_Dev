@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
