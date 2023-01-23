@@ -1,0 +1,30 @@
+Normal:
+145, 230, 120
+
+Cube (Mauve):
+141, 250, 190
+900, 1440, 2000
+
+Face First Cube (Mauve un peu de blanc)
+190, 344, 233 
+1720, 3200, 2400
+
+Cône (Jaune):
+1238, 1869, 341
+170, 274, 113
+
+==================================
+Normal Sans Lumière:
+35, 51, 15
+
+Cube (Mauve):
+11, 11, 8
+7, 7, 6
+
+Cube Face First (Blanc/Mauve):
+17, 20, 9
+17, 20, 9
+
+Cône:
+44, 44, 4
+55, 52, 5
