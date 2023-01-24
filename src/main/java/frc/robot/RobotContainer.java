@@ -4,17 +4,12 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Conduire;
 import frc.robot.subsystems.BasePilotable;
 import frc.robot.subsystems.CapteurCouleur;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 //import frc.robot.subsystems.Limelight;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-
 
 
 public class RobotContainer {
@@ -42,6 +37,6 @@ public class RobotContainer {
 
   
   public Command getAutonomousCommand() {
-    return  new RunCommand(() -> basePilotable.autoConduire(0, 12), basePilotable);
+    return null; //new RunCommand(() -> basePilotable.autoConduire(0, 12), basePilotable);
   }
 }

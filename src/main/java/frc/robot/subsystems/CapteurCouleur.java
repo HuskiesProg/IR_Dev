@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.fasterxml.jackson.databind.deser.DataFormatReaders.Match;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
@@ -17,38 +18,66 @@ public class CapteurCouleur extends SubsystemBase {
 
   // Capteur de couleur
   ColorSensorV3 capteurCouleur = new ColorSensorV3(I2C.Port.kOnboard);
-  private final ColorMatch m_colorMatcher = new ColorMatch();
+  private final ColorMatch colorMatcher = new ColorMatch();
+  private final Color kYellowTarget = new Color(0.361, 0.524, 0.113);
+  private final Color kPurpleTarget = new Color(0.189, 0.439, 0.372);
 
 
-  public CapteurCouleur() {}
+  public CapteurCouleur() {
+    colorMatcher.addColorMatch(kPurpleTarget);
+    colorMatcher.addColorMatch(kYellowTarget);
+
+  }
 
   @Override
   public void periodic() {
+
+    String colorString;
+    Color detection = capteurCouleur.getColor();
+    ColorMatchResult matcher = colorMatcher.matchClosestColor(detection);
+    
+     if (matcher.color == kPurpleTarget) {
+      colorString = "Purple";
+    } else if (matcher.color == kYellowTarget) {
+      colorString = "Yellow";
+    } else {
+      colorString = "Unknown";
+    }
+
+    SmartDashboard.putString("Detected Color", colorString);
+    SmartDashboard.putNumber("rouge", capteurCouleur.getRed());
+    SmartDashboard.putNumber("bleu", capteurCouleur.getBlue());
+    SmartDashboard.putNumber("vert", capteurCouleur.getGreen());
+    SmartDashboard.putNumber("Proximité", capteurCouleur.getProximity());
+
     // This method will be called once per scheduler run
      // Capteur de couleur valeur
+     
+
+/* 
      SmartDashboard.putNumber("rouge", capteurCouleur.getRed());
      SmartDashboard.putNumber("bleu", capteurCouleur.getBlue());
      SmartDashboard.putNumber("vert", capteurCouleur.getGreen());
      SmartDashboard.putNumber("Proximité", capteurCouleur.getProximity());
 
-     if (isInRange(capteurCouleur.getRed(), 9, 6) &&
-      isInRange(capteurCouleur.getGreen(), 9, 6) &&
-      isInRange(capteurCouleur.getBlue(), 7, 4))
+if (isInRange(capteurCouleur.getRed(), 15, 6) &&
+      isInRange(capteurCouleur.getGreen(), 17, 8) &&
+      isInRange(capteurCouleur.getBlue(), 15, 6))
     {
       SmartDashboard.putString("detection", "cube");
     }
 
-    else if (isInRange(capteurCouleur.getRed(), 17, 5) &&
-    isInRange(capteurCouleur.getGreen(), 20, 5) &&
-    isInRange(capteurCouleur.getBlue(), 9, 4))
+    else if (isInRange(capteurCouleur.getRed(), 31, 13) &&
+    isInRange(capteurCouleur.getGreen(), 40, 13) &&
+    isInRange(capteurCouleur.getBlue(), 20, 9))
     
     {
       SmartDashboard.putString("detection", "cube");
     }
 
-    else if (isInRange(capteurCouleur.getRed(), 55, 20) &&
-    isInRange(capteurCouleur.getGreen(), 55, 20) &&
-    isInRange(capteurCouleur.getBlue(),10, 6))
+    else if (isInRange(capteurCouleur.getRed(), 150, 100) &&
+    isInRange(capteurCouleur.getGreen(), 170, 100) &&
+    isInRange(capteurCouleur.getBlue(),30, 20))
 
     {
       SmartDashboard.putString("detection", "cone");
@@ -57,15 +86,42 @@ public class CapteurCouleur extends SubsystemBase {
     else 
     {
       SmartDashboard.putString("detection", "rien");
-    }
-
-     // Color detected Yellow or Purple
+    } 
+    
      String colorString;
      Color detectedColor = capteurCouleur.getColor();
-     ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
-  }
+     ColorMatchResult match = colorMatcher.matchClosestColor(detectedColor);
+    */
+    
 
-  private boolean isInRange(int valeurTest, int cible, int range) {
+     // Color detected Yellow or Purple
+
+    /*SmartDashboard.putNumber("rouge", capteurCouleur.getRed());
+    SmartDashboard.putNumber("bleu", capteurCouleur.getBlue());
+    SmartDashboard.putNumber("vert", capteurCouleur.getGreen());
+    SmartDashboard.putNumber("Proximité", capteurCouleur.getProximity());
+    SmartDashboard.putNumber("Ir", capteurCouleur.getIR());
+
+    if (capteurCouleur.getProximity() > 100) {
+
+    }
+
+    // Color detected Yellow or Purple
+    String colorString;
+    Color detectedColor = capteurCouleur.getColor();
+    ColorMatchResult match = colorMatcher.matchClosestColor(detectedColor);
+
+    if (match.color == kPurpleTarget) {
+      colorString = "Papaul";
+    } else if (match.color == kYellowTarget) {
+      colorString = "Yellow";
+    } else {
+      colorString = "Unknown";
+    }
+    SmartDashboard.putString("Detected Color", colorString);
+  */}
+
+  /*private boolean isInRange(int valeurTest, int cible, int range) {
     return (valeurTest > (cible - range)) && (valeurTest < (cible + range));
-  }
+  }*/
 }
