@@ -49,7 +49,7 @@ public class CapteurCouleur extends SubsystemBase {
     SmartDashboard.putNumber("bleu", capteurCouleur.getBlue());
     SmartDashboard.putNumber("vert", capteurCouleur.getGreen());
     SmartDashboard.putNumber("Proximité", capteurCouleur.getProximity());
-
+    
     // This method will be called once per scheduler run
      // Capteur de couleur valeur
      
