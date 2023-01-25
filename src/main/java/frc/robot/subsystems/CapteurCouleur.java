@@ -49,7 +49,15 @@ public class CapteurCouleur extends SubsystemBase {
     SmartDashboard.putNumber("bleu", capteurCouleur.getBlue());
     SmartDashboard.putNumber("vert", capteurCouleur.getGreen());
     SmartDashboard.putNumber("Proximité", capteurCouleur.getProximity());
+<<<<<<< Updated upstream
     
+=======
+<<<<<<< HEAD
+    SmartDashboard.putNumber("Confidence", matcher.confidence);
+=======
+    
+>>>>>>> 2fa3bc9143e29a5e2524b2574744bb0d10235a61
+>>>>>>> Stashed changes
     // This method will be called once per scheduler run
      // Capteur de couleur valeur
      
@@ -59,7 +67,7 @@ public class CapteurCouleur extends SubsystemBase {
      SmartDashboard.putNumber("bleu", capteurCouleur.getBlue());
      SmartDashboard.putNumber("vert", capteurCouleur.getGreen());
      SmartDashboard.putNumber("Proximité", capteurCouleur.getProximity());
-
+     
 if (isInRange(capteurCouleur.getRed(), 15, 6) &&
       isInRange(capteurCouleur.getGreen(), 17, 8) &&
       isInRange(capteurCouleur.getBlue(), 15, 6))
