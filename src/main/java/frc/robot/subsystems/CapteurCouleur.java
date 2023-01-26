@@ -19,14 +19,14 @@ public class CapteurCouleur extends SubsystemBase {
   // Capteur de couleur
   ColorSensorV3 capteurCouleur = new ColorSensorV3(I2C.Port.kOnboard);
   private final ColorMatch colorMatcher = new ColorMatch();
-  private final Color kYellowTarget = new Color(0.361, 0.524, 0.113);
-  private final Color kPurpleTarget = new Color(0.189, 0.439, 0.372);
+  private final Color kYellowTarget = new Color(0.359, 0.485, 0.158);
+  private final Color kPurpleTarget = new Color(0.26, 0.429, 0.311);
 
 
   public CapteurCouleur() {
     colorMatcher.addColorMatch(kPurpleTarget);
     colorMatcher.addColorMatch(kYellowTarget);
-
+    colorMatcher.setConfidenceThreshold(1);
   }
 
   @Override
@@ -35,29 +35,27 @@ public class CapteurCouleur extends SubsystemBase {
     String colorString;
     Color detection = capteurCouleur.getColor();
     ColorMatchResult matcher = colorMatcher.matchClosestColor(detection);
+    double totalLight = capteurCouleur.getRed() + capteurCouleur.getGreen() + capteurCouleur.getBlue();
     
-     if (matcher.color == kPurpleTarget) {
-      colorString = "Purple";
-    } else if (matcher.color == kYellowTarget) {
-      colorString = "Yellow";
-    } else {
-      colorString = "Unknown";
+    if (matcher.confidence <= 0.94) {
+      colorString = "Nothing"; 
+    } 
+    else if (matcher.color == kPurpleTarget) {
+      colorString = "Cube";
+    } 
+    else if (matcher.color == kYellowTarget) {
+      colorString = "Cone";  
+    } 
+    else{
+      colorString = "Weird stuff happen"; 
     }
 
     SmartDashboard.putString("Detected Color", colorString);
-    SmartDashboard.putNumber("rouge", capteurCouleur.getRed());
-    SmartDashboard.putNumber("bleu", capteurCouleur.getBlue());
-    SmartDashboard.putNumber("vert", capteurCouleur.getGreen());
+    SmartDashboard.putNumber("rouge", capteurCouleur.getRed()/totalLight);
+    SmartDashboard.putNumber("bleu", capteurCouleur.getBlue()/totalLight);
+    SmartDashboard.putNumber("vert", capteurCouleur.getGreen()/totalLight);
     SmartDashboard.putNumber("Proximité", capteurCouleur.getProximity());
-<<<<<<< Updated upstream
-    
-=======
-<<<<<<< HEAD
     SmartDashboard.putNumber("Confidence", matcher.confidence);
-=======
-    
->>>>>>> 2fa3bc9143e29a5e2524b2574744bb0d10235a61
->>>>>>> Stashed changes
     // This method will be called once per scheduler run
      // Capteur de couleur valeur
      
