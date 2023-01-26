@@ -1,19 +1,36 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Limelight extends SubsystemBase {
-  /** Creates a new Limelight. */
+  private NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
+  private NetworkTable limelight = networkTableInstance.getTable("limelight");
+  private NetworkTableEntry botpose = limelight.getEntry("botpose");
+  private NetworkTableEntry stream = limelight.getEntry("stream");
+
+
   public Limelight() {
-    //test
+    stream.setNumber(2);//Pour mettre l'image de la limelight en PiP
+    SmartDashboard.putString("Pose", getPos().toString());
+    
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+  public Pose3d getPos(){
+    double[] temp = { 0, 0, 0 ,0,0,0};//default for getEntry
+    double[] result = botpose.getDoubleArray(temp);
+    Translation3d tran3d = new Translation3d(result[0], result[1], result[2]);
+    Rotation3d r3d = new Rotation3d(result[3], result[4], result[5]);
+    Pose3d p3d = new Pose3d(tran3d, r3d);
+    
+   return p3d;
+
+  } 
 }
