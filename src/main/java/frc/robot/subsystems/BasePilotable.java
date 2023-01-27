@@ -11,68 +11,77 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.Encoder;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class BasePilotable extends SubsystemBase {
-
+  //Moteurs
   private CANSparkMax neog1 = new CANSparkMax(31, MotorType.kBrushless);
   private CANSparkMax neog2 = new CANSparkMax(30, MotorType.kBrushless);
   private CANSparkMax neod1 = new CANSparkMax(32, MotorType.kBrushless);
   private CANSparkMax neod2 = new CANSparkMax(33, MotorType.kBrushless);
   
-
   private MotorControllerGroup neog = new MotorControllerGroup(neog1, neog2);
   private MotorControllerGroup neod = new MotorControllerGroup(neod1, neod2);
 
   private DifferentialDrive drive = new DifferentialDrive(neog, neod);
 
-  private Encoder encodeurg = new Encoder(0, 1, false);
-  private Encoder encodeurd = new Encoder(2, 3, true);
+  //Encodeurs
+  private Encoder encodeurG = new Encoder(0, 1, false);
+  private Encoder encodeurD = new Encoder(2, 3, true);
   private double conversionEncodeur;
 
+  //Gyro
   private PigeonIMU gyro = new PigeonIMU(3);
+  private double rollOffset = 0;
 
-  private DifferentialDriveOdometry odometrie;
 
-  
+  //Odometry
+  private DifferentialDriveOdometry odometry;
 
-  /** Creates a new BasePilotable. */
+
   public BasePilotable() {
-   
-
+    //Reset initiaux
     resetEncodeur();
     resetGyro();
-    conversionEncodeur=1; // À VALIDER Math.PI*0.1865/(256*3*2.5); //roue de 18.46 cm déterminé manuellement, ratio 2.5:1 shaft-roue 3:1 encodeur-shaft encodeur 256 clic encodeur 
-    
-    setRamp(0);
-    encodeurg.setDistancePerPulse(conversionEncodeur);
-    encodeurd.setDistancePerPulse(conversionEncodeur);
-    setNeutralMode(IdleMode.kCoast);
-    //odometrie= new DifferentialDriveOdometry(Rotation2d.fromDegrees(getYaw()));
+
+    //Configuration des encodeurs externes
+    conversionEncodeur = 1; // À VALIDER Math.PI*0.1865/(256*3*2.5); //roue de 18.46 cm déterminé manuellement, ratio 2.5:1 shaft-roue 3:1 encodeur-shaft encodeur 256 clic encodeur 
+    encodeurG.setDistancePerPulse(conversionEncodeur);
+    encodeurD.setDistancePerPulse(conversionEncodeur);
     neog.setInverted(true);
     neod.setInverted(false);
+    
+    //Ramp et Brake
+    setRamp(0);
+    setBrake(false);
 
+    //Odometry
+    odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
   }
   
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
 
-   
+    odometry.update(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
+
+    SmartDashboard.putNumber("angle", getAngle());
+    SmartDashboard.putNumber("yaw", getYaw());
+    SmartDashboard.putNumber("roll", getRoll());
   }
 
 
 ////////Méthode pour conduire
   public void conduire(double vx, double vz) {
     drive.arcadeDrive(-vx, -0.7*vz);// on doit invert les deux axes a cause de 2023 donc ajouter un - a vz
-  
   }
   
   public void autoConduire(double leftVolts, double rightVolts) {
@@ -83,11 +92,20 @@ public class BasePilotable extends SubsystemBase {
 
   /////Méthodes pour configurer les moteurs
 
-  public void setNeutralMode(IdleMode mode){
-    neog1.setIdleMode(mode);
-    neog2.setIdleMode(mode);
-    neod1.setIdleMode(mode);
-    neod2.setIdleMode(mode);
+  public void setBrake(Boolean brake){
+    if (brake) {
+    neog1.setIdleMode(IdleMode.kBrake);
+    neog2.setIdleMode(IdleMode.kBrake);
+    neod1.setIdleMode(IdleMode.kBrake);
+    neod2.setIdleMode(IdleMode.kBrake);
+    }
+
+    else {
+      neog1.setIdleMode(IdleMode.kCoast);
+      neog2.setIdleMode(IdleMode.kCoast);
+      neod1.setIdleMode(IdleMode.kCoast);
+      neod2.setIdleMode(IdleMode.kCoast);
+    }
   }
   
   public void setRamp(double ramp) {
@@ -102,49 +120,79 @@ public class BasePilotable extends SubsystemBase {
   ////////Méthode encodeur
 
   public double getPositionD() {
-    return encodeurd.getDistance();
+    return encodeurD.getDistance();
   }
 
   public double getPositionG() {
-    return encodeurg.getDistance();
+    return encodeurG.getDistance();
   }
 
   public double getVitesseD() {
-    return encodeurd.getRate();
+    return encodeurD.getRate();
   }
   
   public double getVitesseG() {
-    return encodeurg.getRate();
+    return encodeurG.getRate();
   }
   public double getVitesse() {
     return (getVitesseD() + getVitesseG()) / 2;
   }
 
   public void resetEncodeur() {
-    encodeurd.reset();
-    encodeurg.reset();
+    encodeurD.reset();
+    encodeurG.reset();
     neog1.getEncoder().setPosition(0);
   }
 
 
   /////Méthode GYRO Pigeon
+public double getAngle() {
+  return gyro.getYaw();
+}
+
+public void resetGyro() {
+  gyro.setYaw(0);
+  rollOffset = gyro.getRoll();
+  
+}
+
+
   public double getYaw() {//en z
     return gyro.getYaw();
     
   }
-  public double getRoll() {///à changer pour pitch
-    return gyro.getRoll();
-
-
-  }
-
-  public void resetGyro() {
-    gyro.setYaw(0);
+  
+  public double getRoll() {///à changer pour pitch dans charged up selon le sens du gyro
+    return -(gyro.getRoll() - rollOffset);
   }
 
 
+  public boolean isNotBalance(){
+    return Math.abs(getRoll()) >= Constants.kToleranceBalancer;
+  }
+//////////////////////////Odométrie
+  public double[] getOdometry(){
+    double[] position = new double[3];
+    double x = getPose().getTranslation().getX();
+    double y = getPose().getTranslation().getY();
+    double theta = getPose().getRotation().getDegrees();
+    position[0] = x;
+    position[1] = y;
+    position[2] = theta;
+    return position;
+  }
 
+  public Pose2d getPose() {
+    return odometry.getPoseMeters();
+  }
+
+  public void resetOdometry() {
+    resetEncodeur();
+    resetGyro();
+    odometry.resetPosition(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD(), getPose());
+  }
 }
+
 
 
 

@@ -27,7 +27,9 @@ public class Conduire extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    basePilotable.setBrake(true);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
