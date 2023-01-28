@@ -13,11 +13,13 @@ import frc.robot.subsystems.BasePilotable;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class BalancerPIDNormal extends PIDCommand {
+
+  BasePilotable basePilotable;
   /** Creates a new BalancerPIDNormal. */
   public BalancerPIDNormal(BasePilotable basePilotable) {
     super(
         // The controller that the command will use
-        new PIDController(-10, 0, 0),
+        new PIDController(-0.5, 0, 0),
         // This should return the measurement
         basePilotable::getRoll,
         // This should return the setpoint (can also be a constant)
@@ -26,15 +28,17 @@ public class BalancerPIDNormal extends PIDCommand {
         output -> basePilotable.autoConduire(output, output),
           // Use the output here
         basePilotable);
+
+        this.basePilotable = basePilotable;
     // Use addRequirements() here to declare subsystem dependencies.
     // Configure additional PID options by calling `getController` here.
-    getController().setTolerance(Constants.kToleranceBalancer);
+    //getController().setTolerance(50.0);
 
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return getController().atSetpoint();
+    return Math.abs( basePilotable.getRoll()) < Constants.kToleranceBalancer;
   }
 }

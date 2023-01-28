@@ -22,7 +22,7 @@ public class Balancer extends ProfiledPIDCommand {
         // The ProfiledPIDController used by the command
         new ProfiledPIDController(
             // The PID gains
-            1,
+            -1,
             0,
             0,
             // The motion profile constraints

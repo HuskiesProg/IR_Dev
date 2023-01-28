@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 public class RobotContainer {
 
   private final BasePilotable basePilotable = new BasePilotable();
-  //private final Limelight limelight = new Limelight();
+  private final Limelight limelight = new Limelight();
 
   XboxController pilote = new XboxController(0);
   CapteurCouleur couleur = new CapteurCouleur();
@@ -39,6 +39,6 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
    // return new RunCommand(() -> basePilotable.autoConduire(10, 10), basePilotable).until(basePilotable::isNotBalance).andThen(new BalancerPIDNormal(basePilotable));
-  return new Balancer(basePilotable);
+  return new BalancerPIDNormal(basePilotable);
   }
 }
