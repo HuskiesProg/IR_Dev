@@ -11,6 +11,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.Balancer;
 
 public class BasePilotable extends SubsystemBase {
   //Moteurs
@@ -42,11 +44,13 @@ public class BasePilotable extends SubsystemBase {
   //Gyro
   private PigeonIMU gyro = new PigeonIMU(3);
   private double rollOffset = 0;
-
+  
 
   //Odometry
   private DifferentialDriveOdometry odometry;
 
+  //PID Balancer
+  private PIDController pidBalancer = new PIDController(-0.5, 0, 0);
 
   public BasePilotable() {
     //Reset initiaux
@@ -66,6 +70,10 @@ public class BasePilotable extends SubsystemBase {
 
     //Odometry
     odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
+
+    pidBalancer.setSetpoint(0);
+    
+    pidBalancer.setTolerance(2);
   }
   
   @Override
@@ -76,6 +84,9 @@ public class BasePilotable extends SubsystemBase {
     SmartDashboard.putNumber("angle", getAngle());
     SmartDashboard.putNumber("yaw", getYaw());
     SmartDashboard.putNumber("roll", getRoll());
+    SmartDashboard.putNumber("Tolerance", pidBalancer.getPositionTolerance());
+    SmartDashboard.putNumber("P", pidBalancer.getP());
+    SmartDashboard.putNumber("Position Error", pidBalancer.getPositionError());
   }
 
 
@@ -190,6 +201,14 @@ public void resetGyro() {
     resetEncodeur();
     resetGyro();
     odometry.resetPosition(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD(), getPose());
+  }
+
+  public double voltagePIDBalancer() {
+    return pidBalancer.calculate(getRoll(), 0);
+  }
+
+  public boolean isBalancer() {
+    return pidBalancer.atSetpoint();
   }
 }
 

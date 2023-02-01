@@ -15,5 +15,6 @@ package frc.robot;
 public final class Constants {
 
 public static final int kToleranceBalancer = 5;
+public static final double rampTeleop = 0.2;
   
 }
