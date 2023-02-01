@@ -32,7 +32,7 @@ public class Limelight extends SubsystemBase {
     SmartDashboard.putString("Pose", getPos().toString());
 
     //L'angle du robot par rapport au AprilTag normalisé en Degree
-    SmartDashboard.putNumber("ANgle Camera",Math.toDegrees( getPos().getRotation().getZ()));
+    SmartDashboard.putNumber("Angle Camera",Math.toDegrees( getPos().getRotation().getZ()));
   }
 
 //Function qui retourne la position 3D du robot par rapport à un AprilTag

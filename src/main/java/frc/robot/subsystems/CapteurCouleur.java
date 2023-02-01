@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.fasterxml.jackson.databind.deser.DataFormatReaders.Match;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
@@ -19,115 +18,57 @@ public class CapteurCouleur extends SubsystemBase {
   // Capteur de couleur
   ColorSensorV3 capteurCouleur = new ColorSensorV3(I2C.Port.kOnboard);
   private final ColorMatch colorMatcher = new ColorMatch();
-  private final Color kYellowTarget = new Color(0.359, 0.485, 0.158);
-  private final Color kPurpleTarget = new Color(0.26, 0.429, 0.311);
+  private final Color kCouleurCone = new Color(0.359, 0.485, 0.158);
+  private final Color kCouleurCube = new Color(0.26, 0.429, 0.311);
 
+  String colorString;
+  ColorMatchResult comparaisonCouleur;
 
   public CapteurCouleur() {
-    colorMatcher.addColorMatch(kPurpleTarget);
-    colorMatcher.addColorMatch(kYellowTarget);
-    colorMatcher.setConfidenceThreshold(1);
+    colorMatcher.addColorMatch(kCouleurCube);
+    colorMatcher.addColorMatch(kCouleurCone);
+
   }
 
   @Override
   public void periodic() {
 
-    String colorString;
-    Color detection = capteurCouleur.getColor();
-    ColorMatchResult matcher = colorMatcher.matchClosestColor(detection);
-    double totalLight = capteurCouleur.getRed() + capteurCouleur.getGreen() + capteurCouleur.getBlue();
-    
-    if (matcher.confidence <= 0.94) {
-      colorString = "Nothing"; 
-    } 
-    else if (matcher.color == kPurpleTarget) {
-      colorString = "Cube";
-    } 
-    else if (matcher.color == kYellowTarget) {
-      colorString = "Cone";  
-    } 
-    else{
-      colorString = "Weird stuff happen"; 
-    }
 
-    SmartDashboard.putString("Detected Color", colorString);
-    SmartDashboard.putNumber("rouge", capteurCouleur.getRed()/totalLight);
-    SmartDashboard.putNumber("bleu", capteurCouleur.getBlue()/totalLight);
-    SmartDashboard.putNumber("vert", capteurCouleur.getGreen()/totalLight);
-    SmartDashboard.putNumber("Proximité", capteurCouleur.getProximity());
-    SmartDashboard.putNumber("Confidence", matcher.confidence);
-    // This method will be called once per scheduler run
-     // Capteur de couleur valeur
-     
+   /*SmartDashboard.putNumber("Proximite", capteurCouleur.getProximity());
+    SmartDashboard.putNumber("Rouge", getCouleur().red);
+    SmartDashboard.putNumber("Vert", getCouleur().green);
+    SmartDashboard.putNumber("Bleu", getCouleur().blue);*/
+    SmartDashboard.putBoolean("Cone?", isCone());
+    SmartDashboard.putBoolean("Cube?", isCube());
+  
+  }
 
-/* 
-     SmartDashboard.putNumber("rouge", capteurCouleur.getRed());
-     SmartDashboard.putNumber("bleu", capteurCouleur.getBlue());
-     SmartDashboard.putNumber("vert", capteurCouleur.getGreen());
-     SmartDashboard.putNumber("Proximité", capteurCouleur.getProximity());
-     
-if (isInRange(capteurCouleur.getRed(), 15, 6) &&
-      isInRange(capteurCouleur.getGreen(), 17, 8) &&
-      isInRange(capteurCouleur.getBlue(), 15, 6))
-    {
-      SmartDashboard.putString("detection", "cube");
-    }
+  public Color getCouleur() {
+    return capteurCouleur.getColor();
+  }
 
-    else if (isInRange(capteurCouleur.getRed(), 31, 13) &&
-    isInRange(capteurCouleur.getGreen(), 40, 13) &&
-    isInRange(capteurCouleur.getBlue(), 20, 9))
-    
-    {
-      SmartDashboard.putString("detection", "cube");
-    }
 
-    else if (isInRange(capteurCouleur.getRed(), 150, 100) &&
-    isInRange(capteurCouleur.getGreen(), 170, 100) &&
-    isInRange(capteurCouleur.getBlue(),30, 20))
+  public Color comparerCouleur() {
+    comparaisonCouleur = colorMatcher.matchClosestColor(getCouleur());
+    return comparaisonCouleur.color;
 
-    {
-      SmartDashboard.putString("detection", "cone");
-    }
+  }
+
+  public boolean isDetected() {
+    return capteurCouleur.getProximity() > 150;
+
+  }
+
+  public boolean isCone() {
+
+    return comparerCouleur() == kCouleurCone && isDetected();
+
+  }
+
+  public boolean isCube() {
+    return comparerCouleur()==kCouleurCube && isDetected();
+
+  }
+
  
-    else 
-    {
-      SmartDashboard.putString("detection", "rien");
-    } 
-    
-     String colorString;
-     Color detectedColor = capteurCouleur.getColor();
-     ColorMatchResult match = colorMatcher.matchClosestColor(detectedColor);
-    */
-    
-
-     // Color detected Yellow or Purple
-
-    /*SmartDashboard.putNumber("rouge", capteurCouleur.getRed());
-    SmartDashboard.putNumber("bleu", capteurCouleur.getBlue());
-    SmartDashboard.putNumber("vert", capteurCouleur.getGreen());
-    SmartDashboard.putNumber("Proximité", capteurCouleur.getProximity());
-    SmartDashboard.putNumber("Ir", capteurCouleur.getIR());
-
-    if (capteurCouleur.getProximity() > 100) {
-
-    }
-
-    // Color detected Yellow or Purple
-    String colorString;
-    Color detectedColor = capteurCouleur.getColor();
-    ColorMatchResult match = colorMatcher.matchClosestColor(detectedColor);
-
-    if (match.color == kPurpleTarget) {
-      colorString = "Papaul";
-    } else if (match.color == kYellowTarget) {
-      colorString = "Yellow";
-    } else {
-      colorString = "Unknown";
-    }
-    SmartDashboard.putString("Detected Color", colorString);
-  */}
-
-  /*private boolean isInRange(int valeurTest, int cible, int range) {
-    return (valeurTest > (cible - range)) && (valeurTest < (cible + range));
-  }*/
 }
