@@ -14,12 +14,12 @@
   "number of samples per average": 1,
   "primary encoder inverted": true,
   "primary encoder ports": [
-    4,
-    3
+    31,
+    30
   ],
   "primary motor ports": [
-    4,
-    3
+    31,
+    30
   ],
   "primary motors inverted": [
     true,
@@ -27,12 +27,12 @@
   ],
   "secondary encoder inverted": false,
   "secondary encoder ports": [
-    1,
-    2
+    32,
+    33
   ],
   "secondary motor ports": [
-    1,
-    2
+    32,
+    33
   ],
   "secondary motors inverted": [
     false,
