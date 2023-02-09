@@ -1,18 +1,8 @@
 {
   "SysId": {
     "Analysis Type": "Drivetrain",
-    "Logger": {
-      "window": {
-        "visible": false
-      }
-    },
     "NetworkTables Settings": {
       "serverTeam": "5439"
-    },
-    "Program Log": {
-      "window": {
-        "visible": false
-      }
     },
     "mode": "Client (NT4)",
     "serverTeam": "5439"

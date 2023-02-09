@@ -54,7 +54,7 @@ public class BasePilotable extends SubsystemBase {
     resetGyro();
 
     //Configuration des encodeurs externes
-    conversionEncodeur = 1; // À VALIDER Math.PI*0.1865/(256*3*2.5); //roue de 18.46 cm déterminé manuellement, ratio 2.5:1 shaft-roue 3:1 encodeur-shaft encodeur 256 clic encodeur 
+    conversionEncodeur = Math.PI*0.1865/(256*3*2.5); //roue de 18.46 cm déterminé manuellement, ratio 2.5:1 shaft-roue 3:1 encodeur-shaft encodeur 256 clic encodeur circonférence de la roue 58cm aproximatif
     encodeurG.setDistancePerPulse(conversionEncodeur);
     encodeurD.setDistancePerPulse(conversionEncodeur);
     neog.setInverted(true);
@@ -83,6 +83,9 @@ public class BasePilotable extends SubsystemBase {
     SmartDashboard.putNumber("Tolerance", pidBalancer.getPositionTolerance());
     SmartDashboard.putNumber("P", pidBalancer.getP());
     SmartDashboard.putNumber("Position Error", pidBalancer.getPositionError());
+
+    SmartDashboard.putNumber("Position gauche", getPositionG());
+    SmartDashboard.putNumber("Position droite", getPositionD());
   }
 
 
