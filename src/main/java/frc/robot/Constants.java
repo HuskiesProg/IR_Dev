@@ -20,9 +20,12 @@ public static final int kToleranceBalancer = 5;
 public static final double rampTeleop = 0.2;
 
 public static final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.6);
-    public static final double kS = 0.126;
-    public static final double kV = 4.44;
+    public static final double kS = -0.40122;
+    public static final double kV = 2.4361;
     public static final double kPRamsete = 5.0;
+    public static final double kA = 3.4427;
+    //il nous faut un kP mais je ne sais pas c'est quoi. À modifier
+    
 
     public static final double maxVitesse = 1.5;
     public static final double maxAcceleration = 0.75;
