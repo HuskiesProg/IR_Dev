@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 
 /**
@@ -19,16 +20,19 @@ public final class Constants {
 public static final int kToleranceBalancer = 5;
 public static final double rampTeleop = 0.2;
 
-public static final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.6);
-    public static final double kSRamsete = -0.40122;
-    public static final double kVRamsete = 2.4361;
-    public static final double kPRamsete = 0.16242;
-    public static final double kARamsete = 3.4427;
-    
-    //il nous faut un kP mais je ne sais pas c'est quoi. À modifier
-    
+public static final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.87002); //détermier par sys id
+    public static final double kSRamsete = 0.065517;
+    public static final double kVRamsete = 2.8641;
+    public static final double kARamsete = 4.4822;
 
+    public static final double autoMaxVoltage = 10;
+
+    public static final double kPRamsete = 0.067791;
+    
+    public static final SimpleMotorFeedforward driveTrainFeedFoward = new SimpleMotorFeedforward(Constants.kSRamsete, Constants.kVRamsete, Constants.kARamsete);
+
+    public static final double kRamp = 0.2;
+    
     public static final double maxVitesse = 1.5;
     public static final double maxAcceleration = 0.75;
-  
 }

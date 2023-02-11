@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
@@ -13,13 +14,16 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -54,7 +58,8 @@ public class BasePilotable extends SubsystemBase {
   
 
   //Odometry
-  private DifferentialDriveOdometry odometry;
+  //private DifferentialDriveOdometry odometry;
+  private DifferentialDrivePoseEstimator poseEstimator;
 
   //PID Balancer
   private PIDController pidBalancer = new PIDController(-0.5, 0, 0);
@@ -65,18 +70,20 @@ public class BasePilotable extends SubsystemBase {
     resetGyro();
 
     //Configuration des encodeurs externes
-    conversionEncodeur = Math.PI*0.1865/(256*3*2.5); //roue de 18.46 cm déterminé manuellement, ratio 2.5:1 shaft-roue 3:1 encodeur-shaft encodeur 256 clic encodeur circonférence de la roue 58cm aproximatif
+    conversionEncodeur = Math.PI*0.2032/(256*3*2.5);//Ancienne valeur 0.1865 //roue de 18.46 cm déterminé manuellement, ratio 2.5:1 shaft-roue 3:1 encodeur-shaft encodeur 256 clic encodeur circonférence de la roue 58cm aproximatif
     encodeurG.setDistancePerPulse(conversionEncodeur);
     encodeurD.setDistancePerPulse(conversionEncodeur);
     neog.setInverted(true);
     neod.setInverted(false);
     
     //Ramp et Brake
-    setRamp(0);
+    setRamp(Constants.kRamp);
     setBrake(false);
 
     //Odometry
-    odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
+    //odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
+
+    poseEstimator = new DifferentialDrivePoseEstimator(Constants.kinematics, Rotation2d.fromDegrees(getAngle()), getPositionD(), getPositionG(), new Pose2d());
 
     pidBalancer.setSetpoint(0);
     
@@ -86,7 +93,7 @@ public class BasePilotable extends SubsystemBase {
   @Override
   public void periodic() {
 
-    odometry.update(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
+    poseEstimator.update(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
 
     SmartDashboard.putNumber("angle", getAngle());
     SmartDashboard.putNumber("yaw", getYaw());
@@ -95,8 +102,8 @@ public class BasePilotable extends SubsystemBase {
     SmartDashboard.putNumber("P", pidBalancer.getP());
     SmartDashboard.putNumber("Position Error", pidBalancer.getPositionError());
 
-    SmartDashboard.putNumber("Position gauche", getPositionG());
-    SmartDashboard.putNumber("Position droite", getPositionD());
+    SmartDashboard.putNumber("Position x", poseEstimator.getEstimatedPosition().getX());
+    SmartDashboard.putNumber("Position y", poseEstimator.getEstimatedPosition().getY());
   }
 
 
@@ -162,7 +169,6 @@ public class BasePilotable extends SubsystemBase {
   public void resetEncodeur() {
     encodeurD.reset();
     encodeurG.reset();
-    neog1.getEncoder().setPosition(0);
   }
 
 
@@ -204,13 +210,13 @@ public void resetGyro() {
   }
 
   public Pose2d getPose() {
-    return odometry.getPoseMeters();
+    return poseEstimator.getEstimatedPosition();
   }
 
-  public void resetOdometry() {
+  public void resetOdometry(Pose2d pose) {
     resetEncodeur();
     resetGyro();
-    odometry.resetPosition(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD(), getPose());
+    poseEstimator.resetPosition(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD(), pose);
   }
 
   public double voltagePIDBalancer() {
@@ -239,6 +245,24 @@ public Trajectory creerTrajectoire(String trajet)
 
 }
 
+public Trajectory creerTrajectoire(double x, double y, double angle) {
+  DifferentialDriveVoltageConstraint voltageConstraint = new DifferentialDriveVoltageConstraint(Constants.driveTrainFeedFoward, Constants.kinematics, Constants.autoMaxVoltage);
+  CentripetalAccelerationConstraint contrainteCentripete = new CentripetalAccelerationConstraint(0.5);
+  TrajectoryConfig config = new TrajectoryConfig(Constants.maxVitesse, Constants.maxAcceleration)
+                                        .setKinematics(Constants.kinematics)
+                                        .addConstraint(voltageConstraint)
+                                        .addConstraint(contrainteCentripete);
+
+  Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+                                                List.of(
+                                                  poseEstimator.getEstimatedPosition(), 
+                                                  new Pose2d(x, y, new Rotation2d(Math.toRadians(angle)))
+                                                ), 
+                                                config
+                                              );
+  return trajectory;
+}
+
 
   public boolean isBalancer() {
     return pidBalancer.atSetpoint();
@@ -250,7 +274,7 @@ public Trajectory creerTrajectoire(String trajet)
       trajectoire,
       this::getPose,
       new RamseteController(2, 0.7),
-      new SimpleMotorFeedforward(Constants.kSRamsete, Constants.kVRamsete, Constants.kARamsete),
+      Constants.driveTrainFeedFoward,
       Constants.kinematics,
       this::getWheelSpeeds,
       new PIDController(Constants.kPRamsete, 0, 0),
