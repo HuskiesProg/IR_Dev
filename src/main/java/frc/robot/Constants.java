@@ -20,10 +20,11 @@ public static final int kToleranceBalancer = 5;
 public static final double rampTeleop = 0.2;
 
 public static final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.6);
-    public static final double kS = -0.40122;
-    public static final double kV = 2.4361;
-    public static final double kPRamsete = 5.0;
-    public static final double kA = 3.4427;
+    public static final double kSRamsete = -0.40122;
+    public static final double kVRamsete = 2.4361;
+    public static final double kPRamsete = 0.16242;
+    public static final double kARamsete = 3.4427;
+    
     //il nous faut un kP mais je ne sais pas c'est quoi. À modifier
     
 

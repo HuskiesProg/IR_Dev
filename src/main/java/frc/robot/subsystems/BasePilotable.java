@@ -4,19 +4,30 @@
 
 package frc.robot.subsystems;
 
+import java.io.IOException;
+
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -206,11 +217,49 @@ public void resetGyro() {
     return pidBalancer.calculate(getRoll(), 0);
   }
 
+  
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(getVitesseG(), getVitesseD());
+  }
+
+public Trajectory creerTrajectoire(String trajet)
+{
+
+  String trajetJSON = "output/"+trajet+".wpilib.json";
+  try
+  {
+    var path = Filesystem.getDeployDirectory().toPath().resolve(trajetJSON);
+    return TrajectoryUtil.fromPathweaverJson(path);
+  }
+  catch (IOException e)
+  {
+    DriverStation.reportError( "Unable to open trajectory :" + trajetJSON, e.getStackTrace() );
+    return null;
+  }
+
+}
+
+
   public boolean isBalancer() {
     return pidBalancer.atSetpoint();
   }
-}
 
+  public Command ramseteSimple(Trajectory trajectoire)
+  {
+    RamseteCommand ramseteCommand = new RamseteCommand(
+      trajectoire,
+      this::getPose,
+      new RamseteController(2, 0.7),
+      new SimpleMotorFeedforward(Constants.kSRamsete, Constants.kVRamsete, Constants.kARamsete),
+      Constants.kinematics,
+      this::getWheelSpeeds,
+      new PIDController(Constants.kPRamsete, 0, 0),
+      new PIDController(Constants.kPRamsete, 0, 0),
+      this::autoConduire,
+      this);
+      return ramseteCommand.andThen(()->autoConduire(0, 0));
+  }
+ }
 
 
 
