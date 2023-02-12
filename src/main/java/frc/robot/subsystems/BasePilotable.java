@@ -83,7 +83,7 @@ public class BasePilotable extends SubsystemBase {
     //Odometry
     //odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
 
-    poseEstimator = new DifferentialDrivePoseEstimator(Constants.kinematics, Rotation2d.fromDegrees(getAngle()), getPositionD(), getPositionG(), new Pose2d());
+    poseEstimator = new DifferentialDrivePoseEstimator(Constants.kinematics, Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD(), new Pose2d());
 
     pidBalancer.setSetpoint(0);
     
