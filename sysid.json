@@ -1,0 +1,19 @@
+{
+  "SysId": {
+    "Analysis Type": "Drivetrain",
+    "Generator": {
+      "window": {
+        "visible": false
+      }
+    },
+    "Logger": {
+      "window": {
+        "visible": false
+      }
+    },
+    "NetworkTables Settings": {
+      "serverTeam": "5439"
+    },
+    "serverTeam": "5439"
+  }
+}

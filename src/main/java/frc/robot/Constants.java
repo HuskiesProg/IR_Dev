@@ -20,14 +20,14 @@ public final class Constants {
 public static final int kToleranceBalancer = 5;
 public static final double rampTeleop = 0.2;
 
-public static final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.87002); //détermier par sys id
-    public static final double kSRamsete = 0.065517;
-    public static final double kVRamsete = 2.8641;
-    public static final double kARamsete = 4.4822;
+public static final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.75325); //détermier par sys id
+    public static final double kSRamsete = 0.11258;
+    public static final double kVRamsete = 2.2634;
+    public static final double kARamsete = 0.33039;
 
     public static final double autoMaxVoltage = 10;
 
-    public static final double kPRamsete = 0.067791;
+    public static final double kPRamsete = 2.7888;
     
     public static final SimpleMotorFeedforward driveTrainFeedFoward = new SimpleMotorFeedforward(Constants.kSRamsete, Constants.kVRamsete, Constants.kARamsete);
 

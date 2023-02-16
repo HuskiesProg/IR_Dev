@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -17,6 +19,8 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -58,7 +62,7 @@ public class BasePilotable extends SubsystemBase {
   
 
   //Odometry
-  //private DifferentialDriveOdometry odometry;
+  // private DifferentialDriveOdometry odometry;
   private DifferentialDrivePoseEstimator poseEstimator;
 
   //PID Balancer
@@ -81,9 +85,9 @@ public class BasePilotable extends SubsystemBase {
     setBrake(false);
 
     //Odometry
-    //odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
+    // odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
 
-    poseEstimator = new DifferentialDrivePoseEstimator(Constants.kinematics, Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD(), new Pose2d());
+   poseEstimator = new DifferentialDrivePoseEstimator(Constants.kinematics, Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD(), new Pose2d());
 
     pidBalancer.setSetpoint(0);
     
@@ -94,6 +98,7 @@ public class BasePilotable extends SubsystemBase {
   public void periodic() {
 
     poseEstimator.update(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
+    // odometry.update(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
 
     SmartDashboard.putNumber("angle", getAngle());
     SmartDashboard.putNumber("yaw", getYaw());
@@ -102,8 +107,10 @@ public class BasePilotable extends SubsystemBase {
     SmartDashboard.putNumber("P", pidBalancer.getP());
     SmartDashboard.putNumber("Position Error", pidBalancer.getPositionError());
 
-    SmartDashboard.putNumber("Position x", poseEstimator.getEstimatedPosition().getX());
-    SmartDashboard.putNumber("Position y", poseEstimator.getEstimatedPosition().getY());
+    //SmartDashboard.putNumber("Position x", poseEstimator.getEstimatedPosition().getX());
+    //SmartDashboard.putNumber("Position y", poseEstimator.getEstimatedPosition().getY());
+   
+
   }
 
 
@@ -211,12 +218,14 @@ public void resetGyro() {
 
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
+    // return odometry.getPoseMeters();
   }
 
   public void resetOdometry(Pose2d pose) {
     resetEncodeur();
     resetGyro();
     poseEstimator.resetPosition(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD(), pose);
+    // odometry.resetPosition(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD(), pose);
   }
 
   public double voltagePIDBalancer() {
@@ -254,10 +263,10 @@ public Trajectory creerTrajectoire(double x, double y, double angle) {
                                         .addConstraint(contrainteCentripete);
 
   Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-                                                List.of(
-                                                  poseEstimator.getEstimatedPosition(), 
-                                                  new Pose2d(x, y, new Rotation2d(Math.toRadians(angle)))
-                                                ), 
+                                                  poseEstimator.getEstimatedPosition(),
+                                                  // odometry.getPoseMeters(),
+                                                  List.of(new Translation2d(x - 0.5,y)), 
+                                                  new Pose2d(x, y, new Rotation2d(Math.toRadians(angle))), 
                                                 config
                                               );
   return trajectory;
