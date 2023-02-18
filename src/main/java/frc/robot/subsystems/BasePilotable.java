@@ -5,8 +5,6 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -20,7 +18,6 @@ import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -66,7 +63,7 @@ public class BasePilotable extends SubsystemBase {
   private DifferentialDrivePoseEstimator poseEstimator;
 
   //PID Balancer
-  private PIDController pidBalancer = new PIDController(-0.1, 0, 0);
+  private PIDController pidBalancer = new PIDController(-0.05, 0, 0);
 
   public BasePilotable() {
     //Reset initiaux
@@ -86,11 +83,11 @@ public class BasePilotable extends SubsystemBase {
     //Odometry
     // odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
 
-   poseEstimator = new DifferentialDrivePoseEstimator(Constants.kinematics, Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD(), new Pose2d());
+    poseEstimator = new DifferentialDrivePoseEstimator(Constants.kinematics, Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD(), new Pose2d());
 
     pidBalancer.setSetpoint(0);
     
-    pidBalancer.setTolerance(2);
+    pidBalancer.setTolerance(2.5);
   }
   
   @Override
@@ -105,8 +102,6 @@ public class BasePilotable extends SubsystemBase {
 
     //SmartDashboard.putNumber("Position x", poseEstimator.getEstimatedPosition().getX());
     //SmartDashboard.putNumber("Position y", poseEstimator.getEstimatedPosition().getY());
-   
-
   }
 
 
@@ -120,6 +115,7 @@ public class BasePilotable extends SubsystemBase {
     neod.setVoltage(rightVolts);
     drive.feed();
   }
+
   public void stop() {
     autoConduire(0, 0);
   }
@@ -129,10 +125,10 @@ public class BasePilotable extends SubsystemBase {
 
   public void setBrake(Boolean brake){
     if (brake) {
-    neog1.setIdleMode(IdleMode.kBrake);
-    neog2.setIdleMode(IdleMode.kBrake);
-    neod1.setIdleMode(IdleMode.kBrake);
-    neod2.setIdleMode(IdleMode.kBrake);
+      neog1.setIdleMode(IdleMode.kBrake);
+      neog2.setIdleMode(IdleMode.kBrake);
+      neod1.setIdleMode(IdleMode.kBrake);
+      neod2.setIdleMode(IdleMode.kBrake);
     }
 
     else {
@@ -149,11 +145,13 @@ public class BasePilotable extends SubsystemBase {
     neod1.setOpenLoopRampRate(ramp);
     neod2.setOpenLoopRampRate(ramp);
   }
+
   public void setBrakeEtRampTeleop(boolean estTeleop) {
     if (estTeleop) {
       setBrake(false);
       setRamp(Constants.kRamp);
     }
+
     else {
       setBrake(true);
       setRamp(0);
@@ -196,23 +194,16 @@ public double getAngle() {
 public void resetGyro() {
   gyro.setYaw(0);
   rollOffset = gyro.getRoll();
-  
 }
-
 
   public double getYaw() {//en z
     return gyro.getYaw();
-    
   }
   
   public double getRoll() {///à changer pour pitch dans charged up selon le sens du gyro
     return -(gyro.getRoll() - rollOffset);
   }
 
-
-  public boolean isNotBalance(){
-    return Math.abs(getRoll()) >= Constants.kToleranceBalancer;
-  }
 //////////////////////////Odométrie
   public double[] getOdometry(){
     double[] position = new double[3];
@@ -246,21 +237,19 @@ public void resetGyro() {
     return new DifferentialDriveWheelSpeeds(getVitesseG(), getVitesseD());
   }
 
-public Trajectory creerTrajectoire(String trajet)
-{
+public Trajectory creerTrajectoire(String trajet) {
 
   String trajetJSON = "output/"+trajet+".wpilib.json";
-  try
-  {
+  
+  try {
     var path = Filesystem.getDeployDirectory().toPath().resolve(trajetJSON);
     return TrajectoryUtil.fromPathweaverJson(path);
   }
-  catch (IOException e)
-  {
+
+  catch (IOException e) {
     DriverStation.reportError( "Unable to open trajectory :" + trajetJSON, e.getStackTrace() );
     return null;
   }
-
 }
 
 public Trajectory creerTrajectoire(double x, double y, double angle) {
@@ -286,8 +275,7 @@ public Trajectory creerTrajectoire(double x, double y, double angle) {
     return pidBalancer.atSetpoint();
   }
 
-  public Command ramseteSimple(Trajectory trajectoire)
-  {
+  public Command ramseteSimple(Trajectory trajectoire) {
     RamseteCommand ramseteCommand = new RamseteCommand(
       trajectoire,
       this::getPose,
@@ -298,10 +286,12 @@ public Trajectory creerTrajectoire(double x, double y, double angle) {
       new PIDController(Constants.kPRamsete, 0, 0),
       new PIDController(Constants.kPRamsete, 0, 0),
       this::autoConduire,
-      this);
-      return ramseteCommand.andThen(()->autoConduire(0, 0));
+      this
+    );
+
+    return ramseteCommand.andThen(()-> autoConduire(0, 0));
   }
- }
+}
 
 
 

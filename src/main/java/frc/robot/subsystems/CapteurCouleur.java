@@ -27,48 +27,37 @@ public class CapteurCouleur extends SubsystemBase {
   public CapteurCouleur() {
     colorMatcher.addColorMatch(kCouleurCube);
     colorMatcher.addColorMatch(kCouleurCone);
-
   }
 
   @Override
   public void periodic() {
-
-
    /*SmartDashboard.putNumber("Proximite", capteurCouleur.getProximity());
     SmartDashboard.putNumber("Rouge", getCouleur().red);
     SmartDashboard.putNumber("Vert", getCouleur().green);
     SmartDashboard.putNumber("Bleu", getCouleur().blue);*/
     SmartDashboard.putBoolean("Cone?", isCone());
     SmartDashboard.putBoolean("Cube?", isCube());
-  
   }
 
   public Color getCouleur() {
     return capteurCouleur.getColor();
   }
 
-
   public Color comparerCouleur() {
     comparaisonCouleur = colorMatcher.matchClosestColor(getCouleur());
     return comparaisonCouleur.color;
-
   }
 
   public boolean isDetected() {
     return capteurCouleur.getProximity() > 150;
-
   }
 
   public boolean isCone() {
 
     return comparerCouleur() == kCouleurCone && isDetected();
-
   }
 
   public boolean isCube() {
-    return comparerCouleur()==kCouleurCube && isDetected();
-
+    return comparerCouleur() == kCouleurCube && isDetected();
   }
-
- 
 }

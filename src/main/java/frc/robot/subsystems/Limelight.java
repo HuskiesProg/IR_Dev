@@ -32,6 +32,7 @@ public class Limelight extends SubsystemBase {
     else {
       alliance = "blue";
     }
+
     botpose = limelight.getEntry("botpose_wpi" + alliance);
   }
 
@@ -58,7 +59,6 @@ public Pose3d getVisionPosition() {
     return p3d;
   } 
   
-
   public double getTl() {
     return tl.getDouble(0) + 11;
   }

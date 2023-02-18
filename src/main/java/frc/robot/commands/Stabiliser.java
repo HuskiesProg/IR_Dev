@@ -4,37 +4,39 @@
 
 package frc.robot.commands;
 
-
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.BasePilotable;
 
-public class Conduire extends CommandBase {
-  
+public class Stabiliser extends CommandBase {
   BasePilotable basePilotable;
-  DoubleSupplier avancer;
-  DoubleSupplier tourner;
+  double voltage;
 
-  public Conduire(DoubleSupplier avancer, DoubleSupplier tourner, BasePilotable basePilotable) {
-    this.avancer = avancer;
-    this.tourner = tourner;
+  public Stabiliser(BasePilotable basePilotable) {
     this.basePilotable = basePilotable;
     addRequirements(basePilotable);
+    
   }
   
   @Override
   public void initialize() {
-    basePilotable.setBrakeEtRampTeleop(true);
+    basePilotable.setBrakeEtRampTeleop(false);
   }
   
   @Override
   public void execute() {
-    basePilotable.conduire(avancer.getAsDouble(), tourner.getAsDouble());
+    voltage = basePilotable.voltagePIDBalancer();
+    
+    if (basePilotable.isBalancer()) {
+      voltage = 0;
+    }
+
+    basePilotable.autoConduire(voltage, voltage);
   }
   
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  basePilotable.stop();
+  }
   
   @Override
   public boolean isFinished() {
