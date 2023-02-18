@@ -66,7 +66,7 @@ public class BasePilotable extends SubsystemBase {
   private DifferentialDrivePoseEstimator poseEstimator;
 
   //PID Balancer
-  private PIDController pidBalancer = new PIDController(-0.5, 0, 0);
+  private PIDController pidBalancer = new PIDController(-0.1, 0, 0);
 
   public BasePilotable() {
     //Reset initiaux
@@ -81,8 +81,7 @@ public class BasePilotable extends SubsystemBase {
     neod.setInverted(false);
     
     //Ramp et Brake
-    setRamp(Constants.kRamp);
-    setBrake(false);
+    setBrakeEtRampTeleop(true);
 
     //Odometry
     // odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
@@ -101,11 +100,8 @@ public class BasePilotable extends SubsystemBase {
     // odometry.update(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
 
     SmartDashboard.putNumber("angle", getAngle());
-    SmartDashboard.putNumber("yaw", getYaw());
     SmartDashboard.putNumber("roll", getRoll());
-    SmartDashboard.putNumber("Tolerance", pidBalancer.getPositionTolerance());
-    SmartDashboard.putNumber("P", pidBalancer.getP());
-    SmartDashboard.putNumber("Position Error", pidBalancer.getPositionError());
+    SmartDashboard.putBoolean("balencer", isBalancer());
 
     //SmartDashboard.putNumber("Position x", poseEstimator.getEstimatedPosition().getX());
     //SmartDashboard.putNumber("Position y", poseEstimator.getEstimatedPosition().getY());
@@ -124,6 +120,10 @@ public class BasePilotable extends SubsystemBase {
     neod.setVoltage(rightVolts);
     drive.feed();
   }
+  public void stop() {
+    autoConduire(0, 0);
+  }
+
 
   /////Méthodes pour configurer les moteurs
 
@@ -149,7 +149,16 @@ public class BasePilotable extends SubsystemBase {
     neod1.setOpenLoopRampRate(ramp);
     neod2.setOpenLoopRampRate(ramp);
   }
-  
+  public void setBrakeEtRampTeleop(boolean estTeleop) {
+    if (estTeleop) {
+      setBrake(false);
+      setRamp(Constants.kRamp);
+    }
+    else {
+      setBrake(true);
+      setRamp(0);
+    }
+  }
   
 
   ////////Méthode encodeur

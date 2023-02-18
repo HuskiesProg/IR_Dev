@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.commands.Balancer;
 import frc.robot.commands.Conduire;
 import frc.robot.commands.auto.TestAllerPoint;
 import frc.robot.commands.auto.TrajetAuto;
@@ -34,7 +35,7 @@ public class RobotContainer {
   
   private void configureBindings() {
     pilote.a().onTrue(new TestAllerPoint(basePilotable));
-    
+    pilote.x().whileTrue(new Balancer(basePilotable));
   }
 
   public Command getAutonomousCommand() {

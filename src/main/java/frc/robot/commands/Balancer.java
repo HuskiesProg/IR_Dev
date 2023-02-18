@@ -21,8 +21,7 @@ public class Balancer extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    basePilotable.setRamp(0);
-    basePilotable.setBrake(true);
+    basePilotable.setBrakeEtRampTeleop(false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,12 +34,12 @@ public class Balancer extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    
+  basePilotable.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return basePilotable.isBalancer();
+    return false;
   }
 }

@@ -18,7 +18,8 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 public final class Constants {
 
 public static final int kToleranceBalancer = 5;
-public static final double rampTeleop = 0.2;
+public static final double kRamp = 0.2;
+
 
 public static final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(0.75325); //détermier par sys id
     public static final double kSRamsete = 0.11258;
@@ -31,7 +32,7 @@ public static final DifferentialDriveKinematics kinematics = new DifferentialDri
     
     public static final SimpleMotorFeedforward driveTrainFeedFoward = new SimpleMotorFeedforward(Constants.kSRamsete, Constants.kVRamsete, Constants.kARamsete);
 
-    public static final double kRamp = 0.2;
+
     
     public static final double maxVitesse = 1.5;
     public static final double maxAcceleration = 0.75;
