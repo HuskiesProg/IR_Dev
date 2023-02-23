@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Conduire;
 import frc.robot.commands.FullBalancer;
+import frc.robot.commands.UpdatePosition;
 import frc.robot.commands.auto.TestAllerPoint;
 import frc.robot.commands.auto.TrajetAuto;
 import frc.robot.subsystems.BasePilotable;
@@ -27,6 +28,7 @@ public class RobotContainer {
     configureBindings();
 
     basePilotable.setDefaultCommand(new Conduire(pilote::getLeftY,pilote::getRightX, basePilotable));
+    limelight.setDefaultCommand(new UpdatePosition(limelight, basePilotable));
   }
 
   
