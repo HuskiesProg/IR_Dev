@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -28,8 +29,10 @@ import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstrai
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -56,7 +59,7 @@ public class BasePilotable extends SubsystemBase {
   //Gyro
   private PigeonIMU gyro = new PigeonIMU(3);
   private double rollOffset = 0;
-  
+  private Field2d field = new Field2d();
 
   //Odometry
   // private DifferentialDriveOdometry odometry;
@@ -76,6 +79,8 @@ public class BasePilotable extends SubsystemBase {
     encodeurD.setDistancePerPulse(conversionEncodeur);
     neog.setInverted(true);
     neod.setInverted(false);
+
+    SmartDashboard.putData("Field", field);
     
     //Ramp et Brake
     setBrakeEtRampTeleop(true);
@@ -94,14 +99,17 @@ public class BasePilotable extends SubsystemBase {
   public void periodic() {
 
     poseEstimator.update(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
+    field.setRobotPose(poseEstimator.getEstimatedPosition());
     // odometry.update(Rotation2d.fromDegrees(getAngle()), getPositionG(), getPositionD());
 
     SmartDashboard.putNumber("angle", getAngle());
     SmartDashboard.putNumber("roll", getRoll());
     SmartDashboard.putBoolean("balencer", isBalancer());
 
-    //SmartDashboard.putNumber("Position x", poseEstimator.getEstimatedPosition().getX());
-    //SmartDashboard.putNumber("Position y", poseEstimator.getEstimatedPosition().getY());
+    SmartDashboard.putNumber("Position x", poseEstimator.getEstimatedPosition().getX());
+    SmartDashboard.putNumber("Position y", poseEstimator.getEstimatedPosition().getY());
+
+    
   }
 
 
@@ -221,6 +229,11 @@ public void resetGyro() {
     // return odometry.getPoseMeters();
   }
 
+  public void addVisionMeasurement(Pose2d position, double delaisLimelight){
+     poseEstimator.addVisionMeasurement(position, Timer.getFPGATimestamp() - delaisLimelight);
+
+  }
+
   public void resetOdometry(Pose2d pose) {
     resetEncodeur();
     resetGyro();
@@ -291,6 +304,7 @@ public Trajectory creerTrajectoire(double x, double y, double angle) {
 
     return ramseteCommand.andThen(()-> autoConduire(0, 0));
   }
+
 }
 
 

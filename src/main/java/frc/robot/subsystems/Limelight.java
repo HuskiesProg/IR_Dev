@@ -16,6 +16,8 @@ public class Limelight extends SubsystemBase {
   private NetworkTable limelight = networkTableInstance.getTable("limelight-huskies");
   private NetworkTableEntry tl = limelight.getEntry("tl");
   private NetworkTableEntry tv = limelight.getEntry("tv");
+  // private NetworkTableEntry cl = limelight.getEntry("cl");
+   
   private NetworkTableEntry botpose;
   private NetworkTableEntry stream = limelight.getEntry("stream");
   double[] result;
@@ -25,16 +27,11 @@ public class Limelight extends SubsystemBase {
   public Limelight() {
 
     stream.setNumber(2);//Pour mettre l'image de la limelight en PiP
-    if (DriverStation.getAlliance() == Alliance.Red) {
-      alliance = "red";
-    }
-
-    else {
-      alliance = "blue";
-    }
-
+    alliance = "blue";
     botpose = limelight.getEntry("botpose_wpi" + alliance);
+  
   }
+  
 
   @Override
   public void periodic() {
@@ -43,6 +40,7 @@ public class Limelight extends SubsystemBase {
     SmartDashboard.putNumber("Ty Camera", getVisionPosition().getTranslation().getY());
     SmartDashboard.putNumber("Rz Camera",Math.toDegrees(getVisionPosition().getRotation().getZ()));
     SmartDashboard.putNumber("Latence", getTl());
+    SmartDashboard.putBoolean("April Tag", getTv());
   }
 
 //Function qui retourne la position 3D du robot par rapport à un AprilTag
@@ -66,4 +64,19 @@ public Pose3d getVisionPosition() {
   public boolean getTv() {
     return tv.getDouble(0) == 1;
   }
+
+ 
+  public void setAlliance(){
+    if (DriverStation.getAlliance() == Alliance.Red) {
+      alliance = "red";
+    }
+
+    else {
+      alliance = "blue";
+    }
+
+    botpose = limelight.getEntry("botpose_wpi" + alliance);
+  
+  }
+
 }
