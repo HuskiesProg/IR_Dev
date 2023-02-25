@@ -16,13 +16,15 @@ public class Balancer extends CommandBase {
   double angleActuel;
   double deltaAngle;
   double voltage;
-
   LinearFilter filtre = LinearFilter.singlePoleIIR(0.1,0.02);
 
-  public Balancer(double voltage, BasePilotable basePilotable) {
-    this.basePilotable = basePilotable;
+  public Balancer(double voltage, BasePilotable basePilotable, boolean reculer) {
+    this.basePilotable = basePilotable;  
+    if (reculer == true) {
+      voltage*=-1;
+    }
     this.voltage = voltage;
-    
+
     addRequirements(basePilotable);
   }
 
@@ -35,7 +37,7 @@ public class Balancer extends CommandBase {
 
   @Override
   public void execute() {
-    angleActuel = basePilotable.getRoll();
+    angleActuel = Math.abs(basePilotable.getRoll());
 
     deltaAngle = angleActuel-anglePasse;
 

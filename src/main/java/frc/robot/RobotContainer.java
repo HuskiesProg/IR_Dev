@@ -34,7 +34,8 @@ public class RobotContainer {
   
   private void configureBindings() {
     pilote.a().onTrue(new TestAllerPoint(basePilotable));
-    pilote.x().whileTrue(new FullBalancer(basePilotable));
+    pilote.x().whileTrue(new FullBalancer(basePilotable,false));
+    pilote.y().whileTrue(new FullBalancer(basePilotable,true));
   }
 
   public Command getAutonomousCommand() {

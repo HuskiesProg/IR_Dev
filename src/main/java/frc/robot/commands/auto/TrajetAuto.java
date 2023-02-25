@@ -7,12 +7,13 @@ package frc.robot.commands.auto;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.BasePilotable;
+import frc.robot.subsystems.BasePilotable; 
 
 public class TrajetAuto extends SequentialCommandGroup {
   
   public TrajetAuto(BasePilotable basePilotable) {
     Trajectory trajet = basePilotable.creerTrajectoire("trajet_en_s");
+    
     
     addCommands(
     new InstantCommand(() -> basePilotable.resetOdometry(trajet.getInitialPose())),
