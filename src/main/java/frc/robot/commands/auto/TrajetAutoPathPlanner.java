@@ -9,17 +9,21 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.BasePilotable;
+import frc.robot.subsystems.BasePilotable; 
 
-public class TestAllerPoint extends SequentialCommandGroup {
+public class TrajetAutoPathPlanner extends SequentialCommandGroup {
   
-  public TestAllerPoint(BasePilotable basePilotable) {
-    PathPlannerTrajectory trajet = basePilotable.creerTrajectoire(1, 0, 0);
+  public TrajetAutoPathPlanner(BasePilotable basePilotable) {
+    PathPlannerTrajectory trajet1 = basePilotable.creerTrajectoirePathPlanner("CoopChercherCone", true);
+    PathPlannerTrajectory trajet2 = basePilotable.creerTrajectoirePathPlanner("PlacerConeBande", true);
+    
+    
     addCommands(
+    new InstantCommand(() -> basePilotable.resetOdometry(trajet1.getInitialPose())),
     new InstantCommand(() -> basePilotable.setBrakeEtRampTeleop(false)),
-   
-    basePilotable.ramsetePathPlanner(trajet),
-
+    basePilotable.ramsetePathPlanner(trajet1),
+    basePilotable.ramsetePathPlanner(trajet2),
+  
     new InstantCommand(() -> basePilotable.setBrakeEtRampTeleop(true)));
   }
 }

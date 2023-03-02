@@ -29,7 +29,7 @@ public class UpdatePosition extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(limelight.getTv()){
+    if(limelight.getTv() && limelight.getTa() > 1){
       basePilotable.addVisionMeasurement(limelight.getVisionPosition().toPose2d(), limelight.getTl()/1000.0);
 
     }

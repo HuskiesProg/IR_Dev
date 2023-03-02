@@ -24,6 +24,6 @@ public static final DifferentialDriveKinematics kinematics = new DifferentialDri
     
     public static final SimpleMotorFeedforward driveTrainFeedFoward = new SimpleMotorFeedforward(Constants.kSRamsete, Constants.kVRamsete, Constants.kARamsete);
 
-    public static final double maxVitesse = 1.5;
-    public static final double maxAcceleration = 0.75;
+    public static final double maxVitesse = 3.0;
+    public static final double maxAcceleration = 3.0;
 }

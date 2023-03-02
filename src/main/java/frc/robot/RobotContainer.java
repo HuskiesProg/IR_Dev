@@ -8,10 +8,11 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Conduire;
-import frc.robot.commands.FullBalancer;
 import frc.robot.commands.UpdatePosition;
 import frc.robot.commands.auto.TestAllerPoint;
 import frc.robot.commands.auto.TrajetAuto;
+import frc.robot.commands.auto.TrajetAutoPathPlanner;
+import frc.robot.commands.balancer.FullBalancer;
 import frc.robot.subsystems.BasePilotable;
 import frc.robot.subsystems.Limelight;
 
@@ -40,6 +41,6 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
    // return new RunCommand(() -> basePilotable.autoConduire(10, 10), basePilotable).until(basePilotable::isNotBalance).andThen(new BalancerPIDNormal(basePilotable));
-    return new TrajetAuto(basePilotable);
+    return new TrajetAutoPathPlanner(basePilotable);
   }
 }

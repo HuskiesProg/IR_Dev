@@ -16,6 +16,8 @@ public class Limelight extends SubsystemBase {
   private NetworkTable limelight = networkTableInstance.getTable("limelight-huskies");
   private NetworkTableEntry tl = limelight.getEntry("tl");
   private NetworkTableEntry tv = limelight.getEntry("tv");
+  private NetworkTableEntry ta = limelight.getEntry("ta");
+
   // private NetworkTableEntry cl = limelight.getEntry("cl");
    
   private NetworkTableEntry botpose;
@@ -63,6 +65,10 @@ public Pose3d getVisionPosition() {
 
   public boolean getTv() {
     return tv.getDouble(0) == 1;
+  }
+
+  public double getTa(){
+    return ta.getDouble(0);
   }
 
  
