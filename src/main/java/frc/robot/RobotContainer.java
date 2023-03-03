@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Conduire;
 import frc.robot.commands.UpdatePosition;
 import frc.robot.commands.auto.TestAllerPoint;
-import frc.robot.commands.auto.TrajetAuto;
 import frc.robot.commands.auto.TrajetAutoPathPlanner;
 import frc.robot.commands.balancer.FullBalancer;
 import frc.robot.subsystems.BasePilotable;
