@@ -49,7 +49,7 @@ public class CapteurCouleur extends SubsystemBase {
   }
 
   public boolean isDetected() {
-    return capteurCouleur.getProximity() > 150;
+    return capteurCouleur.getProximity() > 115;
   }
 
   public boolean isCone() {
