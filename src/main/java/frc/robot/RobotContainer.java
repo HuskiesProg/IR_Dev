@@ -13,6 +13,7 @@ import frc.robot.commands.auto.TestAllerPoint;
 import frc.robot.commands.auto.TrajetAutoPathPlanner;
 import frc.robot.commands.balancer.FullBalancer;
 import frc.robot.subsystems.BasePilotable;
+import frc.robot.subsystems.CapteurCouleur;
 import frc.robot.subsystems.Limelight;
 
 
@@ -20,6 +21,8 @@ public class RobotContainer {
 
   private final BasePilotable basePilotable = new BasePilotable();
   private final Limelight limelight = new Limelight();
+
+  private final CapteurCouleur capteurCouleur = new CapteurCouleur();
 
   CommandXboxController pilote = new CommandXboxController(0);
   //CapteurCouleur couleur = new CapteurCouleur();
