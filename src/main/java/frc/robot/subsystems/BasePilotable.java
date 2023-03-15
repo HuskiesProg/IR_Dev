@@ -243,6 +243,12 @@ public class BasePilotable extends SubsystemBase {
     // getPositionD(), pose);
   }
 
+  public void placerRobotPositionInitial(PathPlannerTrajectory trajectory)
+  {
+    trajectory = PathPlannerTrajectory.transformTrajectoryForAlliance(trajectory, DriverStation.getAlliance());
+    resetOdometry(trajectory.getInitialPose());
+  }
+
   public double voltagePIDBalancer() {
     return pidBalancer.calculate(getRoll(), 0);
   }

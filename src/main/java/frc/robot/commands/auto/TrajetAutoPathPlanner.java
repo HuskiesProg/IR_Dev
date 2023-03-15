@@ -6,6 +6,7 @@ package frc.robot.commands.auto;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.BasePilotable; 
@@ -18,7 +19,7 @@ public class TrajetAutoPathPlanner extends SequentialCommandGroup {
     
     
     addCommands(
-    new InstantCommand(() -> basePilotable.resetOdometry(trajet1.getInitialPose())),
+    new InstantCommand(() -> basePilotable.placerRobotPositionInitial(trajet1);),
     new InstantCommand(() -> basePilotable.setBrakeEtRampTeleop(false)),
     basePilotable.ramsetePathPlanner(trajet1),
     basePilotable.ramsetePathPlanner(trajet2),
